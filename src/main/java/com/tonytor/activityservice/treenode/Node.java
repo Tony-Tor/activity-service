@@ -8,7 +8,7 @@ public class Node {
     private String name;
     private NodeHolder holder;
     private Node parent;
-    private Nodeable object;
+    private Object object;
     private Map<String, Node> children;
 
     public Node(NodeHolder holder, String name) {
@@ -104,11 +104,11 @@ public class Node {
         parent.addChild(this);
     }
 
-    public Nodeable getObject() {
+    public Object getObject() {
         return object;
     }
 
-    public void setObject(Nodeable object) {
+    public void setObject(Object object) {
         this.object = object;
     }
 

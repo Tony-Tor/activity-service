@@ -1,7 +1,6 @@
 package com.tonytor.activityservice.service;
 
 import com.tonytor.activityservice.model.AbstractTask;
-import com.tonytor.activityservice.model.BasicTask;
 import lombok.Data;
 
 import java.time.Duration;

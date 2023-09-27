@@ -15,7 +15,7 @@ public class NodeHolder {
     public void removeNodeTree(Node node){
         List<Node> ns = new ArrayList<>();
 
-        node.setParent(null);
+        node.cutBranch();//.setParent(null);
         node.pass(n -> ns.add(n));
         
         for(Node n: ns){
@@ -39,6 +39,10 @@ public class NodeHolder {
             nodes.add(node);
         }
         return nodes;
+    }
+
+    public Node getNodeByName(String name){
+        return nodes.get(name);
     }
 
     public void pass(Consumer<Node> consumer){

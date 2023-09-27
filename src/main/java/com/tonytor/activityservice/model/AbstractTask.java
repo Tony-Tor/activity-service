@@ -12,4 +12,6 @@ public abstract class AbstractTask {
     private String description;
     private LocalDateTime begin;
     private Duration duration;
+    private double percent;
+    private Status status;
 }
