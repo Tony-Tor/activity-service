@@ -3,10 +3,12 @@ package com.tonytor.activityservice.service;
 import com.tonytor.activityservice.model.AbstractTask;
 import com.tonytor.activityservice.treenode.Node;
 import com.tonytor.activityservice.treenode.NodeHolder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class TaskService {
 
     NodeHolder holder = new NodeHolder();
@@ -39,9 +41,22 @@ public class TaskService {
         return holder.getNodes().stream().map(f->(AbstractTask) f.getObject()).collect(Collectors.toList());
     }
 
-    public void deleteTask(AbstractTask task){
-        Node par = holder.getNodeByName(task.getName());
+    public void deleteTask(String name){
+        Node par = holder.getNodeByName(name);
         holder.removeNodeTree(par);
+    }
+
+    public void updateTask(AbstractTask task){
+        Node node = holder.getNodeByName(task.getName());
+        AbstractTask t = (AbstractTask) node.getObject();
+        t.setBegin(task.getBegin());
+        t.setEnd(task.getEnd());
+        t.setPercent(task.getPercent());
+        t.setDescription(task.getDescription());
+        t.setStatus(task.getStatus());
+
+        Node root = node.getRoot();
+
     }
 
 

@@ -1,6 +1,7 @@
 package com.tonytor.activityservice.treenode;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class Node {
@@ -52,6 +53,14 @@ public class Node {
         });
 
         return leaves;
+    }
+
+    public Node getRoot(){
+        Node current = this;
+        while(true){
+            if(current.parent==null) return current;
+            current = current.parent;
+        }
     }
 
     public void upPass(Consumer<Node> consumer){

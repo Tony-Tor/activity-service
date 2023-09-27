@@ -4,14 +4,15 @@ import lombok.Data;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
-public abstract class AbstractTask {
-    private Long id; // TODO: UUID
+public class AbstractTask {
+    private UUID id; // TODO: UUID
     private String name;
     private String description;
     private LocalDateTime begin;
-    private Duration duration;
+    private LocalDateTime end;
     private double percent;
     private Status status;
 }
