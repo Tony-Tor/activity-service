@@ -5,6 +5,8 @@ import com.tonytor.activityservice.treenode.Node;
 import com.tonytor.activityservice.treenode.NodeHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,8 @@ public class TaskService {
         node.setObject(task);
         Node par = holder.getNodeByName(parent.getName());
         par.addChild(node);
+
+        updateNode(node);
     }
 
     public AbstractTask getTaskByName(String name){
@@ -55,8 +59,24 @@ public class TaskService {
         t.setDescription(task.getDescription());
         t.setStatus(task.getStatus());
 
-        Node root = node.getRoot();
+        //Node root = node.getRoot();
+        updateNode(node);
 
+    }
+
+    public void updateNode(Node node){
+        node.upPass(n->{
+            AbstractTask task = (AbstractTask) n.getObject();
+            List<AbstractTask> children = n.getChildren().stream().map(f->(AbstractTask)f.getObject()).collect(Collectors.toList());
+
+            LocalDateTime minStart = children.stream().min(Comparator.comparing(AbstractTask::getBegin)).get().getBegin();
+            LocalDateTime maxEnd = children.stream().max(Comparator.comparing(AbstractTask::getEnd)).get().getEnd();
+            double avgPercent = children.stream().mapToDouble(f->f.getPercent()).average().getAsDouble();
+
+            task.setBegin(minStart);
+            task.setEnd(maxEnd);
+            task.setPercent(avgPercent);
+        });
     }
 
 
