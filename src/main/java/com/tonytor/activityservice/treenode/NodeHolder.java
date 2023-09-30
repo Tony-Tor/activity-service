@@ -57,7 +57,7 @@ public class NodeHolder {
     public List<Node> getLeaves(){
         List<Node> leaves = new ArrayList<>();
         pass(node -> {
-            if(node.getChildrenNotSafe().size()==0)leaves.add(node);
+            if(node.getChildren().size()==0)leaves.add(node);
         });
         return leaves;
     }

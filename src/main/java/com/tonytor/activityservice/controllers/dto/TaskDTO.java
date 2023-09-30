@@ -18,7 +18,7 @@ public class TaskDTO {
     private String status;
 
     public TaskDTO(AbstractTask task){
-        id = task.getId().toString();
+        if(task.getId() != null)id = task.getId().toString();
         name = task.getName();
         description = task.getDescription();
         begin = task.getBegin().toString();

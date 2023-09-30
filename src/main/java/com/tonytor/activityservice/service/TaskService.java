@@ -69,13 +69,15 @@ public class TaskService {
             AbstractTask task = (AbstractTask) n.getObject();
             List<AbstractTask> children = n.getChildren().stream().map(f->(AbstractTask)f.getObject()).collect(Collectors.toList());
 
-            LocalDateTime minStart = children.stream().min(Comparator.comparing(AbstractTask::getBegin)).get().getBegin();
-            LocalDateTime maxEnd = children.stream().max(Comparator.comparing(AbstractTask::getEnd)).get().getEnd();
-            double avgPercent = children.stream().mapToDouble(f->f.getPercent()).average().getAsDouble();
+            if(children.size() != 0){
+                LocalDateTime minStart = children.stream().min(Comparator.comparing(AbstractTask::getBegin)).get().getBegin();
+                LocalDateTime maxEnd = children.stream().max(Comparator.comparing(AbstractTask::getEnd)).get().getEnd();
+                double avgPercent = children.stream().mapToDouble(f->f.getPercent()).average().getAsDouble();
 
-            task.setBegin(minStart);
-            task.setEnd(maxEnd);
-            task.setPercent(avgPercent);
+                task.setBegin(minStart);
+                task.setEnd(maxEnd);
+                task.setPercent(avgPercent);
+            }
         });
     }
 

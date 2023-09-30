@@ -3,6 +3,7 @@ package com.tonytor.activityservice.treenode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Node {
 
@@ -122,7 +123,7 @@ public class Node {
     }
 
     protected List<Node> getChildrenNotSafe() {
-        return children.values().stream().toList();
+        return children.values().stream().collect(Collectors.toList());
     }
 
     public List<Node> getChildren(){
