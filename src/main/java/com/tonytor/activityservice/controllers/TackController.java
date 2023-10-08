@@ -1,6 +1,8 @@
 package com.tonytor.activityservice.controllers;
 
 import com.tonytor.activityservice.controllers.dto.TaskDTO;
+import com.tonytor.activityservice.model.Node;
+import com.tonytor.activityservice.model.NodeHolder;
 import com.tonytor.activityservice.model.Task;
 import com.tonytor.activityservice.model.Status;
 import com.tonytor.activityservice.service.TaskService;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class TackController {
 
     private TaskService service;
+    NodeHolder holder = new NodeHolder();
 
     public TackController(TaskService service) {
         this.service = service;
@@ -29,22 +32,22 @@ public class TackController {
 
     @GetMapping("/{uuid}")
     public TaskDTO getByName(@PathVariable UUID uuid){
-        return new TaskDTO(service.getTaskUUID(uuid));
+        return new TaskDTO(service.getTaskUUID(holder, uuid));
     }
 
     @GetMapping("/all")
     public List<TaskDTO> getAll(){
-        return service.getAll().stream().map(f->new TaskDTO(f)).collect(Collectors.toList());
+        return service.getAll(holder).stream().map(f->new TaskDTO(f)).collect(Collectors.toList());
     }
 
     @GetMapping("/roots")
     public List<TaskDTO> getRoots(){
-        return service.getMainTask().stream().map(f->new TaskDTO(f)).collect(Collectors.toList());
+        return service.getMainTask(holder).stream().map(f->new TaskDTO(f)).collect(Collectors.toList());
     }
 
     @GetMapping("/leaves")
     public Set<TaskDTO> getLeaves(){
-        return service.getLeavesTask().stream().map(f->new TaskDTO(f)).collect(Collectors.toSet());
+        return service.getLeavesTask(holder).stream().map(f->new TaskDTO(f)).collect(Collectors.toSet());
     }
 
     @PostMapping("")
@@ -53,9 +56,9 @@ public class TackController {
         Task t = createTackFromDTO(task);
 
         if(parent==null){
-            service.addTask(t);
+            service.addTask(holder,t);
         } else {
-            service.addTask(t, parent);
+            service.addTask(holder, t, parent);
         }
 
         return t.getId();
@@ -64,7 +67,7 @@ public class TackController {
     @PutMapping("")
     public void updateTask(@RequestBody TaskDTO task){
         Task t = createTackFromDTO(task);
-        service.updateTask(t);
+        service.updateTask(holder, t);
     }
 
     private Task createTackFromDTO(TaskDTO task) {
@@ -80,7 +83,7 @@ public class TackController {
 
     @DeleteMapping("/{uuid}")
     public void deleteTask(@PathVariable UUID uuid){
-        service.deleteTask(uuid);
+        service.deleteTask(holder, uuid);
     }
 
 
