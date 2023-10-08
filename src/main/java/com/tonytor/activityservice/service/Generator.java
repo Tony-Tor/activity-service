@@ -1,7 +1,7 @@
 package com.tonytor.activityservice.service;
 
-import com.tonytor.activityservice.model.AbstractTask;
+import com.tonytor.activityservice.model.Task;
 
 public interface Generator {
-    AbstractTask generate();
+    Task generate();
 }

@@ -1,10 +1,7 @@
 package com.tonytor.activityservice.controllers.dto;
 
-import com.tonytor.activityservice.model.AbstractTask;
-import com.tonytor.activityservice.model.Status;
+import com.tonytor.activityservice.model.Task;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 public class TaskDTO {
@@ -17,7 +14,7 @@ public class TaskDTO {
     private double percent;
     private String status;
 
-    public TaskDTO(AbstractTask task){
+    public TaskDTO(Task task){
         if(task.getId() != null)id = task.getId().toString();
         name = task.getName();
         description = task.getDescription();

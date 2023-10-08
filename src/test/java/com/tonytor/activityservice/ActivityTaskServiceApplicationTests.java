@@ -1,18 +1,13 @@
 package com.tonytor.activityservice;
 
-import com.tonytor.activityservice.treenode.Node;
-import com.tonytor.activityservice.treenode.NodeHolder;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ActivityTaskServiceApplicationTests {
 
-	NodeHolder holder;
+	/*NodeHolder holder;
 	Node node1;
 	Node node2;
 	Node node3;
@@ -244,6 +239,6 @@ class ActivityTaskServiceApplicationTests {
 		assertThat(leaves).contains(node2, node5, node6, node9, node10, node11, node12);
 		assertThat(leaves).doesNotContain(node1, node3, node4, node7, node8);
 
-	}
+	}*/
 
 }

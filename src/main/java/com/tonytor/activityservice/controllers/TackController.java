@@ -1,7 +1,7 @@
 package com.tonytor.activityservice.controllers;
 
 import com.tonytor.activityservice.controllers.dto.TaskDTO;
-import com.tonytor.activityservice.model.AbstractTask;
+import com.tonytor.activityservice.model.Task;
 import com.tonytor.activityservice.model.Status;
 import com.tonytor.activityservice.service.TaskService;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,12 +24,12 @@ public class TackController {
 
     @GetMapping("/test")
     public String test(){
-        return "Hello world";
+        return "It's work";
     }
 
-    @GetMapping("/{name}")
-    public TaskDTO getByName(@PathVariable String name){
-        return new TaskDTO(service.getTaskByName(name));
+    @GetMapping("/{uuid}")
+    public TaskDTO getByName(@PathVariable UUID uuid){
+        return new TaskDTO(service.getTaskUUID(uuid));
     }
 
     @GetMapping("/all")
@@ -47,25 +48,27 @@ public class TackController {
     }
 
     @PostMapping("")
-    public void createTack(@RequestParam(required = false) String parent, @RequestBody TaskDTO task){
+    public UUID createTack(@RequestParam(required = false) UUID parent, @RequestBody TaskDTO task){
 
-        AbstractTask t = createTackFromDTO(task);
+        Task t = createTackFromDTO(task);
 
         if(parent==null){
             service.addTask(t);
         } else {
-            service.addTask(t, service.getTaskByName(parent));
+            service.addTask(t, parent);
         }
+
+        return t.getId();
     }
 
     @PutMapping("")
     public void updateTask(@RequestBody TaskDTO task){
-        AbstractTask t = createTackFromDTO(task);
+        Task t = createTackFromDTO(task);
         service.updateTask(t);
     }
 
-    private AbstractTask createTackFromDTO(TaskDTO task) {
-        AbstractTask t = new AbstractTask();
+    private Task createTackFromDTO(TaskDTO task) {
+        Task t = new Task();
         t.setName(task.getName());
         t.setDescription(task.getDescription());
         t.setBegin(LocalDateTime.parse(task.getBegin()));
@@ -75,9 +78,9 @@ public class TackController {
         return t;
     }
 
-    @DeleteMapping("/{name}")
-    public void deleteTask(@PathVariable String name){
-        service.deleteTask(name);
+    @DeleteMapping("/{uuid}")
+    public void deleteTask(@PathVariable UUID uuid){
+        service.deleteTask(uuid);
     }
 
 
