@@ -1,7 +1,6 @@
 package com.tonytor.activityservice.controllers;
 
 import com.tonytor.activityservice.controllers.dto.TaskDTO;
-import com.tonytor.activityservice.model.Node;
 import com.tonytor.activityservice.model.NodeHolder;
 import com.tonytor.activityservice.model.Task;
 import com.tonytor.activityservice.model.Status;

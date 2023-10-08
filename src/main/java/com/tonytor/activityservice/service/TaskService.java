@@ -1,75 +1,150 @@
 package com.tonytor.activityservice.service;
 
 import com.tonytor.activityservice.model.Task;
-import com.tonytor.activityservice.model.Node;
 import com.tonytor.activityservice.model.NodeHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
 
-    private NodeService service;
+    public void pass(List<Task> nodes, Consumer<Task> consumer){
+        List<Task> passed = new ArrayList<>();
+        for(Task node: nodes){
+            if(!passed.contains(node)){
+                passGraph(node, passed, consumer);
+            }
+        }
+    }
 
-    public TaskService(NodeService service) {
-        this.service = service;
+    private void passGraph(Task node, List<Task> passed, Consumer<Task> consumer){
+        passed.addAll(pass(node, consumer));
+    }
+
+    public List<Task> pass(Task node, Consumer<Task> consumer){
+        List<Task> passed = new ArrayList<>();
+        Deque<Task> stack = new LinkedList<>();
+
+        stack.push(node);
+        while(stack.size()!=0){
+            node = stack.peek();
+            if(!passed.contains(node)){
+                consumer.accept(node);// место для выполнения метода
+                passed.add(node);
+            }
+            boolean hasChildren = false;
+            for(Task n:node.getChildren()){
+                if(!passed.contains(n)){
+                    stack.push(n);
+                    hasChildren = true;
+                    break;
+                }
+            }
+            if(!hasChildren)stack.pop();
+        }
+        return passed;
+    }
+
+    public List<Task> getLeaves(Task node){
+        List<Task> leaves = new ArrayList<>();
+
+        pass(node, n -> {
+            if(n.getChildren().size()==0)leaves.add(n);
+        });
+
+        return leaves;
+    }
+
+    public Task getRoot(Task node){
+        Task current = node;
+        while(true){
+            if(current.getParent()==null) return current;
+            current = current.getParent();
+        }
+    }
+
+    public void upPass(Task node, Consumer<Task> consumer){
+        Task current = node;
+        while(current != null){
+            consumer.accept(current);
+            current = current.getParent();
+        }
+    }
+
+    public void addChild(Task node, Task child){
+        node.getChildren().add(child);
+        child.setParent(child);
+    }
+
+    public void removeChild(Task node, Task child){
+        child.setParent(null);
+        node.getChildren().remove(child);
+    }
+
+    public void cutBranch(Task node){
+        if (node.getParent() == null) return;
+        removeChild(node.getParent(), node);
+    }
+
+    public void setParent(Task node, Task parent) {
+        if(parent == null) {
+            cutBranch(node);
+            return;
+        }
+        addChild(parent, node);
     }
 
     public void addTask(NodeHolder holder, Task task){
-        Node node = new Node();
-        node.setHolder(holder);
-
-        node.setObject(task);
+        task.setHolder(holder);
     }
 
     public void addTask(NodeHolder holder, Task task, UUID uuid){
-        Node node = new Node();
-        node.setHolder(holder);
+        task.setHolder(holder);
 
-        node.setObject(task);
-        Node par = getNodeUUID(holder, uuid);
-        service.addChild(par,node);
-        updateNode(holder, node);
+        Task par = getNodeUUID(holder, uuid);
+        addChild(par,task);
+        updateNode(holder, task);
     }
 
     public Task getTaskUUID(NodeHolder holder, UUID uuid){
         return holder.getNodes().stream()
-                .map(f->(Task) f.getObject())
                 .filter(f-> f.getId().equals(uuid))
                 .findFirst().get();
     }
 
-    public Node getNodeUUID(NodeHolder holder, UUID uuid){
+    public Task getNodeUUID(NodeHolder holder, UUID uuid){
         return holder.getNodes().stream()
-                .filter(f-> ((Task)f.getObject()).getId().equals(uuid))
+                .filter(f-> f.getId().equals(uuid))
                 .findFirst().get();
     }
 
     public List<Task> getMainTask(NodeHolder holder){
-        return holder.getNodes().stream().map(f->(Task) f.getObject()).collect(Collectors.toList());
+        return holder.getNodes().stream()
+                .collect(Collectors.toList());
     }
 
     public List<Task> getLeavesTask(NodeHolder holder){
-        return holder.getNodes().stream().map(f->(Task) f.getObject()).collect(Collectors.toList());
+        return holder.getNodes().stream()
+                .collect(Collectors.toList());
     }
 
     public List<Task> getAll(NodeHolder holder){
-        return holder.getNodes().stream().map(f->(Task) f.getObject()).collect(Collectors.toList());
+        return holder.getNodes().stream()
+                .collect(Collectors.toList());
     }
 
     public void deleteTask(NodeHolder holder, UUID uuid){
-        Node node = getNodeUUID(holder, uuid);
+        Task node = getNodeUUID(holder, uuid);
         holder.getNodes().remove(node);
     }
 
     public void updateTask(NodeHolder holder, Task task){
-        Node node = getNodeUUID(holder, task.getId());
-        Task t = (Task) node.getObject();
+        Task node = getNodeUUID(holder, task.getId());
+        Task t = node;
         t.setBegin(task.getBegin());
         t.setEnd(task.getEnd());
         t.setPercent(task.getPercent());
@@ -80,10 +155,10 @@ public class TaskService {
 
     }
 
-    public void updateNode(NodeHolder holder, Node node){
-        service.upPass(node, n->{
-            Task task = (Task) n.getObject();
-            List<Task> children = n.getChildren().stream().map(f->(Task)f.getObject()).collect(Collectors.toList());
+    public void updateNode(NodeHolder holder, Task node){
+        upPass(node, n->{
+            Task task = n;
+            List<Task> children = n.getChildren().stream().collect(Collectors.toList());
 
             if(children.size() != 0){
                 LocalDateTime minStart = children.stream().min(Comparator.comparing(Task::getBegin)).get().getBegin();

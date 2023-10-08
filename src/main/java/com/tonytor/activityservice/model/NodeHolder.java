@@ -1,13 +1,15 @@
 package com.tonytor.activityservice.model;
 
-import com.tonytor.activityservice.model.Node;
 import lombok.Data;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.*;
-import java.util.function.Consumer;
 
+@Node("NodeHolder")
 @Data
 public class NodeHolder {
-    private List<Node> nodes;
+    @Relationship(type = "CONTAINS", direction = Relationship.Direction.OUTGOING)
+    private List<Task> nodes;
 }
 
