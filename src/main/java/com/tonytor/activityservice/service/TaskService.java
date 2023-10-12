@@ -1,7 +1,7 @@
 package com.tonytor.activityservice.service;
 
 import com.tonytor.activityservice.model.Task;
-import com.tonytor.activityservice.model.NodeHolder;
+import com.tonytor.activityservice.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,6 +12,45 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
 
+    private TaskRepository repository;
+
+    //Create
+    public Task create(Task task, UUID parent){
+        return null;
+    }
+
+    //Read
+    public Task get(UUID uuid){
+        return null;
+    }
+
+    public List<Task> getAll(UUID uuid){
+        return null;
+    }
+
+    public List<Task> getRoots(UUID uuid){
+        return null;
+    }
+
+    public List<Task> getLeaves(UUID uuid){
+        return null;
+    }
+
+    //Update
+    public Task update(Task task, UUID uuid){
+        return null;
+    }
+
+    //Delete
+    public Task delete(UUID uuid){
+        return null;
+    }
+
+
+}
+
+/*
+    //Методы для обхода графа
     public void pass(List<Task> nodes, Consumer<Task> consumer){
         List<Task> passed = new ArrayList<>();
         for(Task node: nodes){
@@ -49,6 +88,30 @@ public class TaskService {
         return passed;
     }
 
+    public void upPass(Task node, Consumer<Task> consumer){
+        Task current = node;
+        while(current != null){
+            consumer.accept(current);
+            current = current.getParent();
+        }
+    }
+
+    //Методы получения элементов графа
+    //Получение корней
+    public Task getRoot(Task node){
+        Task current = node;
+        while(true){
+            if(current.getParent()==null) return current;
+            current = current.getParent();
+        }
+    }
+
+    public List<Task> getMainTask(){
+        return holder.getNodes().stream()
+                .collect(Collectors.toList());
+    }
+
+    //Получение листьев
     public List<Task> getLeaves(Task node){
         List<Task> leaves = new ArrayList<>();
 
@@ -59,20 +122,21 @@ public class TaskService {
         return leaves;
     }
 
-    public Task getRoot(Task node){
-        Task current = node;
-        while(true){
-            if(current.getParent()==null) return current;
-            current = current.getParent();
-        }
+    public List<Task> getLeavesTask(){
+        return holder.getNodes().stream()
+                .collect(Collectors.toList());
     }
 
-    public void upPass(Task node, Consumer<Task> consumer){
-        Task current = node;
-        while(current != null){
-            consumer.accept(current);
-            current = current.getParent();
-        }
+    //Получение всех элементов
+    public List<Task> getAll(){
+        return holder.getNodes().stream()
+                .collect(Collectors.toList());
+    }
+
+    public Task getTaskUUID(UUID uuid){
+        return holder.getNodes().stream()
+                .filter(f-> f.getId().equals(uuid))
+                .findFirst().get();
     }
 
     public void addChild(Task node, Task child){
@@ -98,52 +162,29 @@ public class TaskService {
         addChild(parent, node);
     }
 
-    public void addTask(NodeHolder holder, Task task){
-        task.setHolder(holder);
+    public void addTask(Task task){
+
     }
 
-    public void addTask(NodeHolder holder, Task task, UUID uuid){
-        task.setHolder(holder);
-
-        Task par = getNodeUUID(holder, uuid);
+    public void addTask(Task task, UUID uuid){
+        Task par = getNodeUUID(uuid);
         addChild(par,task);
-        updateNode(holder, task);
+        updateNode(task);
     }
 
-    public Task getTaskUUID(NodeHolder holder, UUID uuid){
+    public Task getNodeUUID(UUID uuid){
         return holder.getNodes().stream()
                 .filter(f-> f.getId().equals(uuid))
                 .findFirst().get();
     }
 
-    public Task getNodeUUID(NodeHolder holder, UUID uuid){
-        return holder.getNodes().stream()
-                .filter(f-> f.getId().equals(uuid))
-                .findFirst().get();
-    }
-
-    public List<Task> getMainTask(NodeHolder holder){
-        return holder.getNodes().stream()
-                .collect(Collectors.toList());
-    }
-
-    public List<Task> getLeavesTask(NodeHolder holder){
-        return holder.getNodes().stream()
-                .collect(Collectors.toList());
-    }
-
-    public List<Task> getAll(NodeHolder holder){
-        return holder.getNodes().stream()
-                .collect(Collectors.toList());
-    }
-
-    public void deleteTask(NodeHolder holder, UUID uuid){
-        Task node = getNodeUUID(holder, uuid);
+    public void deleteTask(UUID uuid){
+        Task node = getNodeUUID(uuid);
         holder.getNodes().remove(node);
     }
 
-    public void updateTask(NodeHolder holder, Task task){
-        Task node = getNodeUUID(holder, task.getId());
+    public void updateTask(Task task){
+        Task node = getNodeUUID(task.getId());
         Task t = node;
         t.setBegin(task.getBegin());
         t.setEnd(task.getEnd());
@@ -151,11 +192,11 @@ public class TaskService {
         t.setDescription(task.getDescription());
         t.setStatus(task.getStatus());
 
-        updateNode(holder, node);
+        updateNode(node);
 
     }
 
-    public void updateNode(NodeHolder holder, Task node){
+    public void updateNode(Task node){
         upPass(node, n->{
             Task task = n;
             List<Task> children = n.getChildren().stream().collect(Collectors.toList());
@@ -171,6 +212,4 @@ public class TaskService {
             }
         });
     }
-
-
-}
+*/

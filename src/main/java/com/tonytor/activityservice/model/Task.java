@@ -20,7 +20,6 @@ public class Task extends AbstractIdEntity{
     private double percent;
     private Status status;
 
-    private NodeHolder holder;
     private Task parent;
     @Relationship(type = "PARENT_OF", direction = Relationship.Direction.INCOMING)
     private List<Task> children;
