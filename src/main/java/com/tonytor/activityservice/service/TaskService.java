@@ -14,36 +14,42 @@ public class TaskService {
 
     private TaskRepository repository;
 
+    public TaskService(TaskRepository repository) {
+        this.repository = repository;
+    }
+
     //Create
     public Task create(Task task, UUID parent){
-        return null;
+        return repository.save(task);
     }
 
     //Read
     public Task get(UUID uuid){
-        return null;
+        return repository.findOneById(uuid);
     }
 
     public List<Task> getAll(UUID uuid){
-        return null;
+        return repository.findAll();
     }
 
-    public List<Task> getRoots(UUID uuid){
+    /*public List<Task> getRoots(UUID uuid){
         return null;
     }
 
     public List<Task> getLeaves(UUID uuid){
         return null;
-    }
+    }*/
 
     //Update
     public Task update(Task task, UUID uuid){
-        return null;
+        return repository.save(task);
     }
 
     //Delete
     public Task delete(UUID uuid){
-        return null;
+        Task deleted = get(uuid);
+        repository.deleteById(uuid);
+        return deleted;
     }
 
 

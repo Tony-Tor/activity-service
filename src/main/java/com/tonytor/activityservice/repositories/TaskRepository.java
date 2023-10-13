@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface TaskRepository extends Neo4jRepository<Task, UUID> {
-    Task findOneByID(UUID id);
+    Task findOneById(UUID id);
 }
