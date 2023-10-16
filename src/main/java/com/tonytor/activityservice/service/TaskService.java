@@ -20,7 +20,10 @@ public class TaskService {
 
     //Create
     public Task create(Task task, UUID parent){
-        return repository.save(task);
+        task.setParent(get(parent));
+        Task res = repository.save(task);
+        if(parent!=null)update(get(parent),parent);
+        return res;
     }
 
     //Read
@@ -32,17 +35,49 @@ public class TaskService {
         return repository.findAll();
     }
 
-    /*public List<Task> getRoots(UUID uuid){
-        return null;
+    public List<Task> getRoots(UUID uuid){
+        return repository.findRoots();
     }
 
     public List<Task> getLeaves(UUID uuid){
-        return null;
-    }*/
+        return repository.findLeaves();
+    }
 
     //Update
-    public Task update(Task task, UUID uuid){
-        return repository.save(task);
+    public List<Task> update(Task task, UUID uuid){
+        List<Task> nodes = new ArrayList<>();
+        Task node = get(uuid);
+        node.setName(task.getName());
+        node.setBegin(task.getBegin());
+        node.setEnd(task.getEnd());
+        node.setPercent(task.getPercent());
+        node.setDescription(task.getDescription());
+        node.setStatus(task.getStatus());
+
+        upPass(node, n->{
+            List<Task> children = n.getChildren().stream().collect(Collectors.toList());
+
+            if(children.size() != 0){
+                LocalDateTime minStart = children.stream().min(Comparator.comparing(Task::getBegin)).get().getBegin();
+                LocalDateTime maxEnd = children.stream().max(Comparator.comparing(Task::getEnd)).get().getEnd();
+                double avgPercent = children.stream().mapToDouble(f->f.getPercent()).average().getAsDouble();
+
+                n.setBegin(minStart);
+                n.setEnd(maxEnd);
+                n.setPercent(avgPercent);
+            }
+            nodes.add(n);
+            repository.update(
+                    n.getId(),
+                    n.getName(),
+                    n.getDescription(),
+                    n.getBegin(),
+                    n.getEnd(),
+                    n.getPercent(),
+                    n.getStatus());
+        });
+
+        return nodes;
     }
 
     //Delete
@@ -52,7 +87,13 @@ public class TaskService {
         return deleted;
     }
 
-
+    public void upPass(Task node, Consumer<Task> consumer){
+        Task current = node;
+        while(current != null){
+            consumer.accept(current);
+            current = current.getParent();
+        }
+    }
 }
 
 /*
@@ -189,33 +230,5 @@ public class TaskService {
         holder.getNodes().remove(node);
     }
 
-    public void updateTask(Task task){
-        Task node = getNodeUUID(task.getId());
-        Task t = node;
-        t.setBegin(task.getBegin());
-        t.setEnd(task.getEnd());
-        t.setPercent(task.getPercent());
-        t.setDescription(task.getDescription());
-        t.setStatus(task.getStatus());
 
-        updateNode(node);
-
-    }
-
-    public void updateNode(Task node){
-        upPass(node, n->{
-            Task task = n;
-            List<Task> children = n.getChildren().stream().collect(Collectors.toList());
-
-            if(children.size() != 0){
-                LocalDateTime minStart = children.stream().min(Comparator.comparing(Task::getBegin)).get().getBegin();
-                LocalDateTime maxEnd = children.stream().max(Comparator.comparing(Task::getEnd)).get().getEnd();
-                double avgPercent = children.stream().mapToDouble(f->f.getPercent()).average().getAsDouble();
-
-                task.setBegin(minStart);
-                task.setEnd(maxEnd);
-                task.setPercent(avgPercent);
-            }
-        });
-    }
 */

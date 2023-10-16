@@ -25,8 +25,8 @@ public class Task{
     private LocalDateTime end;
     private double percent;
     private Status status;
-
-    private Task parent;
     @Relationship(type = "PARENT_OF", direction = Relationship.Direction.INCOMING)
+    private Task parent;
+    @Relationship(type = "PARENT_OF", direction = Relationship.Direction.OUTGOING)
     private List<Task> children;
 }

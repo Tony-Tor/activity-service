@@ -33,19 +33,19 @@ public class TackController {
     }
 
     @GetMapping("/all/{uuid}")
-    public List<TaskDTO> getAll(@PathVariable(required = false) UUID uuid){
-        return service.getAll(uuid).stream().map(f->new TaskDTO(f)).collect(Collectors.toList());
+    public Set<TaskDTO> getAll(@PathVariable(required = false) UUID uuid){
+        return service.getAll(uuid).stream().map(f->new TaskDTO(f)).collect(Collectors.toSet());
     }
 
-    /*@GetMapping("/roots")
-    public List<TaskDTO> getRoots(){
-        return service.getMainTask().stream().map(f->new TaskDTO(f)).collect(Collectors.toList());
+    @GetMapping("/roots/{uuid}")
+    public Set<TaskDTO> getRoots(@PathVariable(required = false) UUID uuid){
+        return service.getRoots(uuid).stream().map(f->new TaskDTO(f)).collect(Collectors.toSet());
     }
 
-    @GetMapping("/leaves")
-    public Set<TaskDTO> getLeaves(){
-        return service.getLeavesTask().stream().map(f->new TaskDTO(f)).collect(Collectors.toSet());
-    }*/
+    @GetMapping("/leaves/{uuid}")
+    public Set<TaskDTO> getLeaves(@PathVariable(required = false) UUID uuid){
+        return service.getLeaves(uuid).stream().map(f->new TaskDTO(f)).collect(Collectors.toSet());
+    }
 
     @PostMapping("")
     public TaskDTO create(@RequestParam(required = false) UUID parent, @RequestBody TaskDTO task){
@@ -53,10 +53,10 @@ public class TackController {
         return new TaskDTO(service.create(t, parent));
     }
 
-    @PutMapping("")
-    public TaskDTO update(@RequestBody TaskDTO task){
+    @PutMapping("/{uuid}")
+    public Set<TaskDTO> update(@RequestBody TaskDTO task, @PathVariable UUID uuid){
         Task t = task.createTackFromDTO();
-        return new TaskDTO(service.update(t, UUID.fromString(task.getId())));
+        return service.update(t, uuid).stream().map(f->new TaskDTO(f)).collect(Collectors.toSet());
     }
 
     @DeleteMapping("/{uuid}")

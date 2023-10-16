@@ -5,6 +5,8 @@ import com.tonytor.activityservice.model.Task;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class TaskDTO {
@@ -16,6 +18,8 @@ public class TaskDTO {
     private String end;
     private double percent;
     private String status;
+    private String parent;
+    private List<String> children;
 
     public TaskDTO(Task task){
         if(task.getId() != null)id = task.getId().toString();
@@ -25,6 +29,17 @@ public class TaskDTO {
         end = task.getEnd().toString();
         percent = task.getPercent();
         status = task.getStatus().toString();
+        Task parent = task.getParent();
+        if(parent!=null){
+            this.parent=parent.getId().toString();
+        }
+        this.children = new ArrayList<>();
+        List<Task> children = task.getChildren();
+        if(children!=null){
+            for(Task ch:children){
+                this.children.add(ch.getId().toString());
+            }
+        }
     }
 
     public TaskDTO() {
